@@ -1,0 +1,45 @@
+Current Version: 4.0.6
+
+Version 4.0.6
+- new cWidgetRoot.Windowless-Property
+- new cWidgetBase.ToolTipDuration-Property
+- new Class cWebArchive (a File- and InMemory-Archiver, which can load
+  its Content also from Resources)
+
+Version 4.0.5
+- fixed cWidgetForm.Load, which didn't behave exactly right in conjunction with
+  cWidgetForm.Show
+- new Method on cFSO (cFSO.IsFileWritable)
+- new Method on cThreadHandler (cThreadHandler.WaitForEmptyJobQueue)
+- new Version of vb_cairo_sqlite.dll (SQLite now again at recent version 3.7.14)
+
+Version 4.0.4
+- fixed TimeOut of 1.3sec whilst opening SQLite-Files on ReadOnly-Folders 
+  (or if the File itself got the ReadOnly-Attribute - using sqlite3_open_v2)
+- changed the chinese Default-Fallback-Font to the better matching "SimSun"
+  in case of "mixed Unicode-TextOutput" (thanks to Boxian Zhou, for pointing that out)
+
+Version 4.0.3
+- bugfix in cTCPServer.SendData (in case the connection was reset by 
+  the remote side) thanks to Wolfgang Wolf for catching that 
+- Added a new EnumValue for the first Param in cWidgetForms.Create
+  (Value 6 now ensures Borderless-Alpha-Windows, which behave similar
+  to PopUps, but do have a TaskBar-Entry and are not "TopMost"
+
+Version 4.0.2 
+- companion Dll vb_cairo_sqlite now includes latest SQLite 3.7.10 -
+  also fixed the contained chipmunk-based static-lib, so that it
+  doesn't depend on SSE2 capable CPUs anymore
+- fixed a Bug in cWidgetForms, when created on a separate Thread
+  (They need GetDeskTopWindow as a Parent then)
+- Workaround for missing RealmName-Prop in cWebResponse (now it's
+  possible to use: cWebResponse.ServerName = "ServerName (RealmName)"
+
+Version 4.0.1
+- stabilized the cWidgetForms-engine for Debugging-Safety
+- did the same enhancements also in cSubClass
+- Fixes/Performance-Enhancements in the Widget-Rendering-Stack
+- cFSO.ReadByteContent/ReadTextContent was fixed, to also give correct
+  results on existing Files with no content (an empty ByteArray or String)
+- Rs.UpdateBatch Fix, when working against an "attached Table" (when said
+  table was similarly named to an already existing table in the main-DB)

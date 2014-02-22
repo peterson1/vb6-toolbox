@@ -1,0 +1,203 @@
+Current Version: 5.0.6
+
+Version 5.0.6
+- small fix in cWebKit-cleanup-behaviour - (in case of a NewWindow-Request, which was cancelled/not-showing, there was a bit
+                                            too much of "internal cleanup" on the temporary, only "half-alive" WebKit-Instance)
+- fix in the Form-Engine-Destroy-Behaviour (in the cWidgetForm.Unload-Method) - now we take special care when destroying Popups,
+  that the appropriate Shadow-Style is correctly in place, before calling DestroyWindow (this bug was affecting only PopupForms
+  with an DropShadow-ExStyle - where "the shadow" was left visible after Unload ... but this happened only on XP, not on Vista or Win7).
+- fix which destroys ToolTips on MouseOver and MouseClick - and hides them as well, when their associated Widget is clicked.
+
+Version 5.0.5
+- fixed a small error in cSVG, when parsing the <path>-Tag (related to lower-case 'c' and 's' entries, which map against cairos RelCurveTo-API)
+- fixed a few Key-Handling - and Tabbing/Focussing-issues, when using a normal VB-Usercontrol (ucPanel.ctl) as the Base for a cWidgetRoot
+- fixed a visual glitch in the cWidgetBase-ToolTip-Handling (when the ToolTip is dynamically changed to an empty string - whilst being visible)
+
+Version 5.0.4  
+- extended the Lib about "Public availability" of the two Main-Entry-Points:
+  'New_c' (which hands out the cConstructor) ... and
+  'Cairo' (which hands out a cCairo-instance)
+  both without declaring Extra-Variables first ... e.g. when used in Test- or Demo-Projects,
+  this might be helpful, to avoid Extra-Typing of the otherwise needed Declaration-Lines in a *.bas
+- added two new Functions to cArrayList (AddElements and RemoveElements) ... useful, when more than a single Element needs to be added/removed  
+
+**** With Version 5.0.3 the planned Interface-Extensions are now (really) complete -> Binary-Compatibility is ON!  ****
+Will refrain from further additions to the Interface now, sorry for the BinComp-break in the two-weeks-interval 
+between Versions 5.0.2 and 5.0.3 - but a few requests came in within those 2 weeks... please excuse this last "small cleanup"
+**** Next round of Interface-Extensions (breaking the BinComp) is planned for Version 6 in about 1-2 years :-)     ****
+ 
+Version 5.0.3  
+- a smaller Fix for the Handling of the new Class cVBDraw, when used as VB-compatible "Drawer" at the WidgetRoot-BaseLayer
+  (Widgets on top of it were destroying those "VB-Drawings at Ground-Level" in some cases before the fix)
+  
+- larger performance-optimizations for the new Class cArrayList (thanks to Bart Smissaert who wrote 
+  some test-cases, which pointed to the right places, where such optimizations were needed most)
+  So, the List.Init Call is now optimized when in the first Optional Param an Array is passed.
+  Other optimizations were done behind the List.Sort-Method.
+  Also added a few important Optional Params in the Sort-Method (to be able to define the exact Sort-Scheme, when the List contains the String-Type)
+  New added method CopyToArray, which works basically as the BindToArray-method, but creates a real, free-standing VBArray (of the same Type) as a copy.
+  New Optional Params in both Methods (BindToArray and CopyToArray), to be able to specify the LBound of the Result
+  
+- some smaller "cosmetic changes" in cAudioCaptureClient with regards to the logarithmic-Scaling of the FFT-Bands 
+  also added a new FFTInputLevelFactor-Property on this Class, and exposed the FFT- and Peak-Calculations as a  
+  new public-method CalculateMeterInfoFromBuf(...) for usage with ones own, user-provided Wav-Buffers 
+  
+- just forgot - and now added the new Classes cTDD, and cTDDResult for easier writing of Tests in Test-Driven-Development-scenarios...
+  this will be useful for the development of the new Compiler, which can start now, based on the "RC5 Runtime-Environment"
+  
+- added a new Optional Param to the cRPCListener.StartServer Method (..., Optional ToCallBeforeAnyRPC As String)
+  In this Param, one can specify "DllName.dll.ClassName.Method", which needs to be called (Error-Free), before the 
+  "real" RPC-method is executed in *any* given RPC. If this specified "Before"-method is raising an Error internally
+  (due to a failed Authentication-Check for example), then this Error is backtransported to the Clientside,
+  and the real RPC-Method is *not* called (followed up) in this case, due to an early exit on the server-end.
+  This trick is helpful, to avoid a lot of special Authentication-Handling at the level of *each and every* normal
+  RPC-Method ... if the new Optional Param is set, this task gets moved "out of the way", into a single, dedicated Dll-location.
+  Thanks to Jason Peter Brown for the suggestion.
+
+
+Version 5.0.2 (including the newest SQLite-Version at this time - march 2013 - 3.7.16)
+
+- larger improvements under the hood in cairos Text-Rendering-queue (based on the UniScribe-API) ...
+  now about factor two faster, when working against Pixel-Surfaces - also in the Measurement-functions -
+  this was tuned, (or came to attention) whilst developing the new cwGrid-Widget, rendering quite a lot of (clipped) Text-Cells
+
+- new Methods in cConstructor: GetStringFromPointerW, + a whole new set of methods, to call functions by Pointer: CreateInstanceUnk, vtblCall,
+                               GetFuncPtr, cdeclCall, cdeclCallDirect, stdCall, stdCallDirect - especially the new __CallDirect functions work nearly
+                               as fast as a normal VB-Declare now (factor 10-20 faster than the older cCDecl-Class from Paul Caton, which was introduced
+                               in  RC4, but is now omitted from RC5, to achieve a bit of "weight-loss" on the Binary, and not include double-functionality
+                               new IsXPPlus, IsVistaPlus, IsWin7Plus, IsWin8Plus - those Is...Functions work independently from "Compatibility-Settings" 
+
+- new Methods in cCairo: CreateMenuItemRoot, CreateMenuItemFromJSON
+
+- new class cMenuItem (works in conjunction with the above two constructor-functions, it's a DataSource-Class, which is more powerful than the class-name
+                       may suggest..., it allows nested hierarchical MenuDefs and can serialize the state of a complete Menu-hierarchy at any time,
+                       with one line of code (to JSON). Currently used together with the new cwMenu-Widget 
+						   
+- new class cArrayList:  very memory-efficient, works "typed" (needs basically only the same memory as the native Array-Type) 
+                         methods as: Add(Optional BeforeIndex), Remove(by Index), Push, Pop, Queue, DeQueue, Sort, Clone...
+                         Serialization-Support (Content-Property) and BindArray/ReleaseArray-Functions, to span a native Array-Type over the current content
+						 
+- new class cVBDraw: This class provides the classic VB-Drawing-interface (Line, Circle, Point, Scale etc.) in exactly the same "old-fashioned param-typing"-style, 
+                     those older Drawing-Commands require - it can be retrieved over Cairo.CreateVBDrawing (to be bound to a VB-PicureBox but also to a PDF-Filename!) - 
+                     It is also directly available on a cWidgetRoot... In case of Set MyVBDrawing = cWidgetRoot.VBDrawing, the WidgetRoot binds itself internally
+                     to the VBDraw-Instance it hands out, and then VB-Drawing-commands are possible, which are shown below the Widgets-layer 
+					 (under the hood all is working antialiased and unicode-capable with cairo of course)
+					 
+- new Optional "FieldInfo"-Param in cConnection.CreateTableFromADORs
+
+- new cFields.Exists method in the SQLite-Wrapper (to check for FieldNames in a given cRecordset)
+
+- new Methods in cDirList -> DirWatchStart, DirWatchStop (incl. new appropriate Watch-Events for File-Add/Remove/Change-Actions, based on IOCompletionPorts)
+
+- new Methods in cFSO -> overhauled CreateFileStream/OpenFileStream-APIs - now using more Optional Params and
+                         the SHCreateStreamOnFileEx-API under the hood for "Huge-File-Support (>4GB)
+                         GetFileHash-Function (also for huge files >4GB), supporting MD5/SHA1/SHA256...(SHA1 with about 300-400MB/s throughput)
+                         SetFileAttributesEx (for Attributes, as well as optional FileDates, also working for Directories - unicode-capable)
+                         ShowFoldersDialog (unicode-capable, free Root- and Selection-Path specifying, Change- and Edit-Events)
+                         Unicode-FileName-capable DeleteFile, MoveFile, CopyFile, CreateDirectory, RemoveDirectory, CurrentDirectory
+                         New, easy to use, unicode-capable MultiFileOp-Functions (based on SHFileOperation, incl. returning of a "RenameOnCollision_MapCollection")
+                         EnsurePath (Auto-Creation of deeper nested Directories)
+                         EnsurePathEndSep (small Helper-Function, to ensure proper Path-Separator-Trailing or -Removing)
+						 
+- new Methods in cCrypt -> AESEncrypt/AESDecrypt in different depths (including optional InitVector- and PW-Hash-Params)
+
+- new Methods in cDataSource (too many to list - it's a whole set of functions for Tree(Node)-Support on nested cCollections ...
+                              initializable also directly from JSON-Strings - working in conjunction with the new, virtual cwTree-Widget)
+							  
+- a set of new Classes for the Vista/Win7/Win8 CoreAudio-API(cMMDeviceEnumerator, cMMDeviceCollection, cMMDevice, cPropertyStore
+                                                             cAudioClient, cAudioRenderClient, cAudioCaptureClient
+                                                             cSimpleAudioVolume, cAudioStreamVolume, cChannelAudioVolume, 
+                                                             cAudioMeterInformation, cMP3Resource
+                                                             cDeviceTopology, cControlInterface cConnector, cPartsList, 
+                                                             cPart, cAudioInputSelector
+															 
+- Win7/Win8 Touch-Interfaces -> in cWidgetForm and cWidgetRoot -> RegisterTouchWindow/UnRegisterTouchWindow/IsTouchWindow
+                                in cWidgetBase a new Event -> Touch(Infos() As cTouchInfo)
+                                a new Class -> cTouchInfo
+
+
+Version 5.0.1 
+- new Methods in cFSO -> Unicode-capable ShellExecute, IsFileWritable, ShowOpenDialog, ShowSaveDialog 
+- new Methods in cStream -> WriteFromLong, ReadToLong
+- new Methods in cCollection -> Prop, ItemExists, IndexBySortKeyIndex, SortKeyIndexByIndex
+- new Methods in the Archiver-Class cWebArchive -> ReadContentsFromByteArray, SaveContentsToByteArray
+- new Methods in cConnection (SQLite) -> OpenDBReadOnly, CreateTable, NewFieldDefs
+- new Methods in cCairoSurface -> AdjustColors/GetColorLUT(Brightness, Contrast, Gamma, Invert),
+                                  BindToArrayLong (In addition to BindArray for Long()-instead of Byte()-Arrays)
+- new Methods in cWidgetBase -> InnerWidget, ToolTipDuration, MoveToBack, CalculateScreenOffsets
+                                CalculateScreenDimensions, CalculateScreenPopupOffsets, CurrentMonitor
+- new Methods in cWidgetForm -> FullScreen, SetCapture/ReleaseCapture, Locked
+- new Method in cConstructor -> HPTimer (using the QuerPerformance-APIs under the hood)
+And finally included:
+Win7/Win8 Gesture-Interfaces -> in cWidgetForm and cWidgetRoot -> SetGestureConfig/GetGestureConfig
+								in cWidgetBase two new Events -> Gesture(Info As cGestureInfo) and GestureNotify()
+								two new Classes -> cGestureConfigList, cGestureInfo
+
+
+Version 5.0.0
+- cWidgetRoot.Windowless=False is now fully working (hWnd-based Widgets behave identically to the "original Windowless ones" now)
+- new cPanelLayout/cPanelDef-Classes, which ensure "FrameSet-like behaviour" (with Docking- and BackGround-ImageSplit-support)
+- overhauled WidgetLoading/WidgetSaving mechanism - new Interface (IXMLWidgetStore, accompanying IWidgetLoader)
+- new cWidgetBase.InnerWidget-Property (to exclude "inner-controls" from the XML-serialization, as e.g. 
+  on the cwTextBox, to exclude the serialization of its internally (dynamically) created cwScrollbars)
+- new cMemDB-convenience-class (wrapping an InMemory-SQLite-Connection for easier "LINQ-Like" usage)
+- new cDataSourceDisp/cDataSource-Classes which are Binding-related and can throw Events (across InProcess-Dlls)
+  (cDataSource can wrap two kind of Container-Types behind a commonly usable interface: cRecordset, cCollection)
+- new Property 'Prop' on the cCollection, which allows for "AddOrReplace"-behaviour in write-direction on a given Key
+  also added to cCollection were the methods IndexBySortKeyIndex() and SortKeyIndexByIndex() for easier dynamic 
+  switching between sort-modes (sorted and unsorted read-outs over the Index).
+- new cfLayoutView-Class, which in conjunction with the cDataSource___- and cPanel___-Classes can be used
+  in very loosely coupled XAML/WPF-like MVC-scenarios now
+- added GetCPUCoresCount-Function to cConstructor
+- added MemCopy-Function to cConstructor ...internally delegating to RtlMoveMemory ... this is an offer for people
+  who are unnerved by AVIRAs (false-positives) warnings, which in very small Exe-Projects are triggered 
+  already by the sheer existence of the RtlMoveMemory-API Declare-line ... on larger compiled Binaries
+  ...as e.g. the RC5-lib here... these warnings are not thrown by AVIRAs heuristics... so this is a way out of this mess)
+
+
+-------- major version-bump from 4 to 5 (DllName-Change from vbRichClient4.dll to vbRichClient5.dll ---------------
+
+
+Version 4.0.6
+- new cWidgetRoot.Windowless-Property
+- new cWidgetBase.ToolTipDuration-Property
+- new Class cWebArchive (a File- and InMemory-Archiver, which can load
+  its Content also from Resources)
+
+Version 4.0.5
+- fixed cWidgetForm.Load, which didn't behave exactly right in conjunction with
+  cWidgetForm.Show
+- new Method on cFSO (cFSO.IsFileWritable)
+- new Method on cThreadHandler (cThreadHandler.WaitForEmptyJobQueue)
+- new Version of vb_cairo_sqlite.dll (SQLite now again at recent version 3.7.14)
+
+Version 4.0.4
+- fixed TimeOut of 1.3sec whilst opening SQLite-Files on ReadOnly-Folders 
+  (or if the File itself got the ReadOnly-Attribute - using sqlite3_open_v2)
+- changed the chinese Default-Fallback-Font to the better matching "SimSun"
+  in case of "mixed Unicode-TextOutput" (thanks to Boxian Zhou, for pointing that out)
+
+Version 4.0.3
+- bugfix in cTCPServer.SendData (in case the connection was reset by 
+  the remote side) thanks to Wolfgang Wolf for catching that 
+- Added a new EnumValue for the first Param in cWidgetForms.Create
+  (Value 6 now ensures Borderless-Alpha-Windows, which behave similar
+  to PopUps, but do have a TaskBar-Entry and are not "TopMost"
+
+Version 4.0.2 
+- companion Dll vb_cairo_sqlite now includes latest SQLite 3.7.10 -
+  also fixed the contained chipmunk-based static-lib, so that it
+  doesn't depend on SSE2 capable CPUs anymore
+- fixed a Bug in cWidgetForms, when created on a separate Thread
+  (They need GetDeskTopWindow as a Parent then)
+- Workaround for missing RealmName-Prop in cWebResponse (now it's
+  possible to use: cWebResponse.ServerName = "ServerName (RealmName)"
+
+Version 4.0.1
+- stabilized the cWidgetForms-engine for Debugging-Safety
+- did the same enhancements also in cSubClass
+- Fixes/Performance-Enhancements in the Widget-Rendering-Stack
+- cFSO.ReadByteContent/ReadTextContent was fixed, to also give correct
+  results on existing Files with no content (an empty ByteArray or String)
+- Rs.UpdateBatch Fix, when working against an "attached Table" (when said
+  table was similarly named to an already existing table in the main-DB)

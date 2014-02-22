@@ -1,0 +1,183 @@
+Maybe I should start with the good news, that all
+the libraries which are used and available in this 
+toolset, allow you also commercial usage (without
+opening-up your Application-Code under one of the 
+OpenSource-licenses ... VB-Classic does not offer
+any static linking) - but that is of course not 
+saying, that "we" (as the VB-community) should
+not "give back" something under one of these 
+licenses too - your choice of course... :-)
+
+
+So, I will go this route in the next months at least -
+by opening up the sources of the ActiveX- (COM-) Dll
+vbRichClient4.dll to the VB6-community under LGPL,
+to offer a "larger security", for those who make use of 
+these wrapper-libs already in their projects - 
+(since "closed source One-Man-shows" are always considered 
+ a little bit risky in the long run) - but also to 
+"give something back" into the general OpenSource-community, 
+since without their generousity and efforts something like 
+this "free usable package" here would not be possible at all.
+
+Ok, what now follows is a short description of the
+contents of the build OpenSource-based library:
+vb_cairo_sqlite.dll
+
+which does the underlying "basic-work" here in this small 
+framework ... The ActiveX-Dll:
+vbRichClient4.dll 
+
+is a ActiveX- (or COM-) wrapper "on top", which allows to deal 
+with the functionality of the OpenSource-libs in a comfortable,
+objectoriented and secure (VB-)way (secure here means, that 
+you will not need to take care with regards to handle- and/or 
+memory-freeing yourself.
+
+But I digress...
+
+The opensource-libs were build and linked from C-Source 
+with VS-2008, the MS-runtime-lib is statically linked-in + 
+any suitable speed-optimization was applied, therefore its 
+somewhat larger size, compared with MingW-builds...
+
+So, whilst this file describes, what's in vb_cairo_sqlite.dll,
+the optional \WebKitCairo\-SubFolder contains an additional
+file like this one here, to describe the contents, libs and
+licenses for all the WebKit-binaries...
+
+-------- please place at least the following license-info in a file --------
+-------- (license.txt)  beside the RC4-libs in your own deployments --------
+The sqlite3-engine vb_cairo_sqlite contains, is public domain 
+due to the generous D.R. Hipp (www.sqlite.org)- but the DB-
+functionality also contains some differently licensed sub-parts 
+as are:
+   
+   - FastLZ (compression-algos, included as Source-Modules)
+     http://www.fastlz.org/
+	 MIT-license
+	 
+   - ZLib (higher compression, well-balanced compr./decomp. Speed)
+     http://www.gzip.org/zlib/zlib_license.html
+	 ZLib-license (very liberal too)
+	 
+   - LZMA (highest compression, decomp. fast, compr. slow)
+     http://www.7-zip.org/sdk.html
+	 Public Domain license
+	 
+All of the different compression-algos are available over
+cCrypt of the vbRichClient4.dll - and come internally into 
+play for example, when transferring serialized SQLite-Recordsets
+over TCP/IP (using the RPC-Server-Classes of vbRichClient4).
+
+
+Ok, and here the "more cairo-related" Sub-Libs and their licenses:
+
+   The "main-parts" come of course from the cairo-project,
+   which is licensed under LGPL/MPL: (http://cairographics.org/)
+
+   - libpixman (fast, optimized pixel-surface-routines)
+	 BSD-like license, e.g. mentioned here: 
+	 http://wiki.mozilla.org/License_Policy
+
+   - libPng 
+     http://www.libpng.org/pub/png/src/libpng-LICENSE.txt
+	 PNG-license
+	 
+   - ZLib (again, but used here mainly by libPng in CDecl-fashion)
+	 http://www.gzip.org/zlib/zlib_license.html
+	 ZLib-license
+	 
+   - chipmunk (2D-physics engine)
+     http://howlingmoonsoftware.com/chipmunk.php
+	 MIT-license
+   
+   - libjpeg-turbo (superfast JPG De- and Encoding)
+     http://www.wxwidgets.org/about/licence3.txt
+	 wxWindows-license (resembling and in many parts identical to LGPL)
+------------- end of the minimum license-info-section -----------------
+
+What I hope is, that this text-file here now offers more clarity on 
+"what's in there, in the package" - and it is also a necessitiy 
+now, to deploy these license-infos along with the 3 framework-dlls, 
+since other than the former "plain sqlite36_engine.dll", the
+new, combined vb_cairo_sqlite.dll has LGPL- and other parts linked in.
+
+So, please make sure, you include at least this file here along
+with the RC4-binaries, when you plan to deploy your solutions
+in a "correct way".
+
+And maybe an additional note about using the wrappers new
+SVG-functionality, which was implemented directly in 
+vbRichClient4.dll in plain VB6-code, so - the usual 
+(and somewhat large with all its additional dependencies) 
+librsvg was not needed and linked in the cairo-C-build).
+The new cairo-tutorial "RC4cairoTutorial.zip", downloadable 
+from here: www.datenhaus.de/Downloads/RC4cairoTutorial.zip
+
+...now contains a few SVG-Icons from the modern (and huge) Oxygen-
+Iconset - I've already placed a License-Info for these Images in 
+the Demo-Zip-package, but at this occassion let me write something
+here too, since we are at it.
+
+This will get perhaps a bit longwinded, and some parts are 
+repeated (from different angles) more than once, but please 
+make your way through it anyways, I know that the VB6-community 
+is generally "not that fluent" with all the OpenSource-licenses
+and the implications (I know, I was not ... 3 years ago or so).
+
+The Oxygen-IconTheme is now under LGPL too:
+http://www.oxygen-icons.org/?page_id=4
+
+Which means, that you can use this nice artwork now also 
+commercially in your VB-Apps  (rendered over the wrapper) - 
+but take care, that you do *not* link any Oxygen-Icon-resources  
+(no matter if as *.svg, *.svgz or as a "derived" *.png) as 
+resource-file-content directly into your VB-Apps binaries
+(in case you don't want to open the sources of your Main-Project
+ under LGPL too).
+
+You may link them as resource into a VB-dll-binary - but *only* 
+if you open up the sources for this "Icon-resource.dll" under
+LGPL too (Your Main.exe will not need to be opened then, since
+it links to your Icon-resource.dll only dynamically).
+So the background is, that the LGPL forbids any *static* linking - 
+any part which comes under LGPL (be it a C-compiled static library,
+or an icon), may not be "hidden within" (or merged into) your 
+own (non-LGPL) Project-Sources or the resulting Binaries. 
+
+So, to be on the safe side with Binaries under LGPL, this usually 
+means dynamic linking against them (which e.g. vbRichClient4.dll 
+does per dynamic Declare-Statements against vb_cairo_sqlite.dll) - 
+and for LGPL-icons that means "dynamic linking" (or better 
+"dynamic loading") too ... either from iconfiles in a SubFolder
+under your Apps path - or over a Resource-Dll which comes 
+under LGPL itself.
+
+Ok, I hope all these "license-issues" are now somewhat more
+clear for all you "new potential cairo-users out there" -
+and I didn't "scared you away" with all that... ;-)
+
+But I think (aside from the necessitiy of this file), that
+the infos within here are useful for our community, which
+is IMO (as already said above) somewhat inexperienced yet 
+with regards to opensource-licenses.
+
+Maybe as a "final upshot" again (in simple words), and to 
+avoid any confusion:
+Commercial usage of "all the cairo- and opensource-stuff" 
+in this toolset is allowed, as well as the usage of the 
+huge reservoir of  the Oxygen-IconTheme - just don't try 
+to "hide" where all the "helpful parts" originated from -  
+give infos about their websites and licenses (as done here)  
+in your own deployment as well.
+"Play fair, give credit, inform the user", so to say...
+(a small licenseinfo.txt file alongside the RC4-libs 
+ will be enough).
+
+
+Olaf Schmidt
+
+(in August 2011)
+
+
